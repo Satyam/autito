@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 const CONNECTION_STATUS_CONNECTING = 0;
@@ -10,6 +10,7 @@ const socketUrl = `ws://${document.location.hostname}:${process.env.REACT_APP_WS
 
 const Logger = () => {
   const [messageHistory, setMessageHistory] = useState<MessageEvent[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sendMessage, lastMessage, readyState, getWebSocket] = useWebSocket(socketUrl);
 
   useEffect(() => {

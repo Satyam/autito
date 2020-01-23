@@ -8,17 +8,8 @@ import { Server as WSServer } from 'ws';
 
 import { setTimeout } from 'timers';
 
-const GO_FORWARD = 1;
-const GO_BACK = 2;
-const STOP = 3;
+import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, BEEP, LED } from '../src/constants';
 
-const TURN_LEFT = 11;
-const TURN_RIGHT = 12;
-const GO_STRAIGHT = 13;
-
-const BEEP = 20;
-
-const LED = 30;
 envRead();
 
 const wss = new WSServer({ port: process.env.REACT_APP_WS_PORT });
@@ -201,8 +192,10 @@ app.listen(process.env.REACT_APP_HTTP_PORT, () => console.log(`Example app liste
 
 wss.on('connection', ws => {
   ws.on('message', message => {
+    usbPort.write(message);
     console.log('received: %s', message);
+    serialReader.once('data', line => {
+      ws.send(`<p>***${line}***<p>`);
+    });
   });
-
-  ws.send('something');
 });

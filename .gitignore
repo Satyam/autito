@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+## tsc compiled code
+src/constants.js
+server/index.js

@@ -6,6 +6,7 @@ const socketUrl = `ws://${document.location.hostname}:${process.env.REACT_APP_WS
 const CONNECTION_STATUS_OPEN = 1;
 
 const CommandButton: React.FC<{ command: ArrayBuffer }> = ({ command, children }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sendMessage, lastMessage, readyState, getWebSocket] = useWebSocket(socketUrl);
 
   //const handleClickChangeSocketUrl = useCallback(() => setSocketUrl('wss://demos.kaazing.com/echo'), []);

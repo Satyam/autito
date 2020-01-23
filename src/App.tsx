@@ -3,6 +3,8 @@ import './App.css';
 import Logger from './Logger';
 import CommandButton from './CommandButton';
 
+import { LED, BEEP } from './constants';
+
 // const GO_FORWARD = 1;
 // const GO_BACK = 2;
 // const STOP = 3;
@@ -11,9 +13,6 @@ import CommandButton from './CommandButton';
 // const TURN_RIGHT = 12;
 // const GO_STRAIGHT = 13;
 
-const BEEP = 20;
-
-const LED = 30;
 const App: React.FC = () => {
   return (
     <div className="App">
