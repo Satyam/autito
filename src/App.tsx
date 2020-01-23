@@ -1,24 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Logger from './Logger';
+import CommandButton from './CommandButton';
 
+// const GO_FORWARD = 1;
+// const GO_BACK = 2;
+// const STOP = 3;
+
+// const TURN_LEFT = 11;
+// const TURN_RIGHT = 12;
+// const GO_STRAIGHT = 13;
+
+const BEEP = 20;
+
+const LED = 30;
 const App: React.FC = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Logger />
+      <CommandButton command={new Uint8Array([LED, 1])} >Led On</CommandButton>
+      <CommandButton command={new Uint8Array([LED, 0])} >Led Off</CommandButton>
+      <CommandButton command={new Uint8Array([BEEP])}>Beep</CommandButton>
     </div>
   );
 }

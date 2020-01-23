@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@serialport/list": "^8.0.6",
+    "@serialport/repl": "^8.0.6",
+    "@serialport/terminal": "^8.0.6",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
@@ -10,16 +13,21 @@
     "@types/node": "^12.12.25",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
+    "express": "^4.17.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
-    "typescript": "^3.7.5"
+    "react-use-websocket": "^1.2.0",
+    "serialport": "^8.0.6",
+    "typescript": "^3.7.5",
+    "ws": "^7.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "tsc server/index.ts &&  node server/index.js"
   },
   "eslintConfig": {
     "extends": "react-app"
