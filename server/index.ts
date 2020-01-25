@@ -1,10 +1,11 @@
-import * as SerialPort from 'serialport';
 import * as express from 'express';
+import * as socketIO from 'socket.io';
+import * as SerialPort from 'serialport';
 import * as Readline from '@serialport/parser-readline';
+import { createServer } from 'http';
 import { resolve } from 'path';
 import { config as envRead } from 'dotenv';
 
-import { Server as WSServer } from 'ws';
 
 import { setTimeout } from 'timers';
 
@@ -12,9 +13,12 @@ import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, BEEP, LE
 
 envRead();
 
-const wss = new WSServer({ port: process.env.REACT_APP_WS_PORT });
+// const wss = new WSServer({ port: process.env.REACT_APP_WS_PORT });
 
 const app = express();
+const http = createServer(app);
+const io = socketIO(http);
+
 
 const usbPort = new SerialPort(process.env.REACT_APP_USB_PORT, {
   baudRate: 9600,
@@ -22,14 +26,28 @@ const usbPort = new SerialPort(process.env.REACT_APP_USB_PORT, {
   dataBits: 8,
   parity: 'none',
   stopBits: 1,
-  flowControl: false
+  // flowControl: false
 })
 
 const remoteLog = [];
 
+io.on('connection', socket => {
+  console.log('a user connected');
+  socket.on('command', command => {
+    console.log('command', command)
+    usbPort.write(command);
+    // serialReader.once('data', line => {
+    //   console.log('reply', line);
+    //   socket.emit('reply', line);
+    // });
+  })
+});
 
 const serialReader = usbPort.pipe(new Readline({ delimiter: '\r\n' }));
-serialReader.on('data', line => remoteLog.push(line));
+serialReader.on('data', line => {
+  remoteLog.push(line);
+  io.emit('reply', line);
+});
 usbPort.on('end', () => void console.log('-----'));
 // usbPort.on('error', err => void console.error(err));
 
@@ -187,15 +205,5 @@ app.get('*', (req, res) => {
   })
 })
 
+http.listen(process.env.REACT_APP_HTTP_PORT, () => console.log(`Example app listening on port ${process.env.REACT_APP_HTTP_PORT}!`));
 
-app.listen(process.env.REACT_APP_HTTP_PORT, () => console.log(`Example app listening on port ${process.env.REACT_APP_HTTP_PORT}!`));
-
-wss.on('connection', ws => {
-  ws.on('message', message => {
-    usbPort.write(message);
-    console.log('received: %s', message);
-    serialReader.once('data', line => {
-      ws.send(`<p>***${line}***<p>`);
-    });
-  });
-});

@@ -1,19 +1,21 @@
 import React, { useCallback, } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useSocketIO } from './useSocketIO';
 
-const socketUrl = `ws://${document.location.hostname}:${process.env.REACT_APP_WS_PORT}/`;
-
-const CONNECTION_STATUS_OPEN = 1;
 
 const CommandButton: React.FC<{ command: ArrayBuffer }> = ({ command, children }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [sendMessage, lastMessage, readyState, getWebSocket] = useWebSocket(socketUrl);
+  const socket = useSocketIO();
 
-  //const handleClickChangeSocketUrl = useCallback(() => setSocketUrl('wss://demos.kaazing.com/echo'), []);
-  const handleClick = useCallback(() => sendMessage(command), [sendMessage, command]);
+  const handleClick = useCallback(() => {
+    if (socket) {
+      console.log('emitting', command);
+      // 'binary' is not included in the type definition so it is flagged as error, which is not.
+      // @ts-ignore
+      socket.binary(true).compress(false).emit('command', command);
+    }
+  }, [socket, command]);
 
   return (
-    <button onClick={handleClick} disabled={readyState !== CONNECTION_STATUS_OPEN}>{children}</button>
+    <button onClick={handleClick} disabled={!socket}>{children}</button>
   );
 }
 

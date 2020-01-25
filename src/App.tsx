@@ -1,26 +1,35 @@
 import React from 'react';
 import './App.css';
+import { SocketIOProvider } from './useSocketIO';
+
 import Logger from './Logger';
 import CommandButton from './CommandButton';
 
-import { LED, BEEP } from './constants';
-
-// const GO_FORWARD = 1;
-// const GO_BACK = 2;
-// const STOP = 3;
-
-// const TURN_LEFT = 11;
-// const TURN_RIGHT = 12;
-// const GO_STRAIGHT = 13;
+import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, LED, BEEP } from './constants';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <Logger />
-      <CommandButton command={new Uint8Array([LED, 1])} >Led On</CommandButton>
-      <CommandButton command={new Uint8Array([LED, 0])} >Led Off</CommandButton>
-      <CommandButton command={new Uint8Array([BEEP])}>Beep</CommandButton>
-    </div>
+    <SocketIOProvider>
+      <div className="App">
+        <Logger />
+        <CommandButton command={new Uint8Array([GO_FORWARD, 255])} >Full forward</CommandButton>
+        <CommandButton command={new Uint8Array([GO_FORWARD, 127])} >Half forward</CommandButton>
+        <CommandButton command={new Uint8Array([STOP])} >Stop</CommandButton>
+        <CommandButton command={new Uint8Array([GO_BACK, 127])} >Half back</CommandButton>
+        <CommandButton command={new Uint8Array([GO_BACK, 255])} >Full back</CommandButton>
+        <hr />
+        <CommandButton command={new Uint8Array([TURN_LEFT, 255])} >Full left</CommandButton>
+        <CommandButton command={new Uint8Array([TURN_LEFT, 127])} >Half left</CommandButton>
+        <CommandButton command={new Uint8Array([GO_STRAIGHT])} >Straight</CommandButton>
+        <CommandButton command={new Uint8Array([TURN_RIGHT, 127])} >Half right</CommandButton>
+        <CommandButton command={new Uint8Array([TURN_RIGHT, 255])} >Full right</CommandButton>
+        <hr />
+        <CommandButton command={new Uint8Array([LED, 1])} >Led On</CommandButton>
+        <CommandButton command={new Uint8Array([LED, 0])} >Led Off</CommandButton>
+        <hr />
+        <CommandButton command={new Uint8Array([BEEP])}>Beep</CommandButton>
+      </div>
+    </SocketIOProvider>
   );
 }
 

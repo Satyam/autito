@@ -14,14 +14,17 @@
     "@types/node": "^12.12.25",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
+    "@types/serialport": "^8.0.0",
+    "@types/socket.io": "^2.1.4",
+    "@types/socket.io-client": "^1.4.32",
     "express": "^4.17.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
-    "react-use-websocket": "^1.2.0",
     "serialport": "^8.0.6",
-    "typescript": "^3.7.5",
-    "ws": "^7.2.1"
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "start": "react-scripts start",

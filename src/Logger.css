@@ -1,0 +1,6 @@
+.Logger {
+  border: thin solid silver;
+  margin: 1rem;
+  padding: 1rem;
+  white-space: pre;
+}

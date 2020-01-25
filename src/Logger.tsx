@@ -1,43 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import useWebSocket from 'react-use-websocket';
-
-const CONNECTION_STATUS_CONNECTING = 0;
-const CONNECTION_STATUS_OPEN = 1;
-const CONNECTION_STATUS_CLOSING = 2;
-const CONNECTION_STATUS_CLOSED = 3;
-
-const socketUrl = `ws://${document.location.hostname}:${process.env.REACT_APP_WS_PORT}/`
+import { useSocketIO } from './useSocketIO';
+import './Logger.css';
 
 const Logger = () => {
-  const [messageHistory, setMessageHistory] = useState<MessageEvent[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [sendMessage, lastMessage, readyState, getWebSocket] = useWebSocket(socketUrl);
-
+  const [messageHistory, setMessageHistory] = useState<string[]>([]);
+  const socket = useSocketIO();
   useEffect(() => {
-    if (lastMessage !== null) {
-
-      //getWebSocket returns the WebSocket wrapped in a Proxy. This is to restrict actions like mutating a shared websocket, overwriting handlers, etc
-      const currentWebsocketUrl = getWebSocket().url;
-      console.log('received a message from ', currentWebsocketUrl);
-
-      setMessageHistory(prev => prev.concat(lastMessage));
+    if (socket) {
+      socket.on('reply', (message: string) => {
+        setMessageHistory(prev => prev.concat(message));
+      })
     }
-  }, [lastMessage, getWebSocket]);
-
-  const connectionStatus = {
-    [CONNECTION_STATUS_CONNECTING]: 'Connecting',
-    [CONNECTION_STATUS_OPEN]: 'Open',
-    [CONNECTION_STATUS_CLOSING]: 'Closing',
-    [CONNECTION_STATUS_CLOSED]: 'Closed',
-  }[readyState];
+  }, [socket])
 
   return (
-    <div>
-      <div>Socket URL {socketUrl}</div>
-      <div>The WebSocket is currently {connectionStatus}</div>
-      <div>Last message: {lastMessage ? lastMessage.data : ' --none--'}</div>
+    <div className="Logger">
       <ul>
-        {messageHistory.map((message, idx) => <div key={idx}>{message.data}</div>)}
+        {messageHistory.map((message, idx) => <div key={idx}>{message}</div>)}
       </ul>
     </div>
   );
