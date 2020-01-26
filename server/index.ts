@@ -11,6 +11,7 @@ import { setTimeout } from 'timers';
 
 import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, BEEP, LED } from '../src/constants';
 
+
 envRead();
 
 // const wss = new WSServer({ port: process.env.REACT_APP_WS_PORT });
@@ -29,24 +30,76 @@ const usbPort = new SerialPort(process.env.REACT_APP_USB_PORT, {
   // flowControl: false
 })
 
-const remoteLog = [];
+const remoteLog: string[] = [];
 
+const msg: statusMsg = {
+  lastCommand: ' ',
+  speed: 0,
+  turn: 0,
+  beep: false,
+  led: false,
+  x: 0,
+  y: 0,
+}
 io.on('connection', socket => {
   console.log('a user connected');
+  socket.emit('reply', msg);
+
   socket.on('command', command => {
     console.log('command', command)
     usbPort.write(command);
-    // serialReader.once('data', line => {
+    // serialReader.once('data', (line: string) => {
     //   console.log('reply', line);
     //   socket.emit('reply', line);
     // });
   })
 });
 
+
+const decode: (line: string) => statusMsg = line => {
+
+
+  const n: (i: number) => number = i => parseInt(line.substr(i), 10);
+  const isNumber = /\d|-/;
+
+  msg.lastCommand = ' ';
+  for (let i = 0; i < line.length;) {
+    switch (line[i++]) {
+      case '>':
+        msg.lastCommand = line[i];
+        break;
+      case 's':
+        msg.speed = n(i);
+        break;
+      case 't':
+        msg.turn = n(i);
+        break;
+      case '!':
+        msg.beep = line[i] !== '0';
+        break;
+      case '#':
+        msg.led = line[i] !== '0';
+        break;
+      case 'x':
+        msg.x = n(i);
+        break;
+      case 'y':
+        msg.y = n(i);
+        break;
+      default:
+        while (isNumber.test(line[i])) i += 1;
+        break;
+    }
+  }
+  console.log(line, msg);
+
+  return msg;
+}
+
 const serialReader = usbPort.pipe(new Readline({ delimiter: '\r\n' }));
-serialReader.on('data', line => {
+serialReader.on('data', (line: string) => {
   remoteLog.push(line);
-  io.emit('reply', line);
+  io.emit('reply', decode(line));
 });
 usbPort.on('end', () => void console.log('-----'));
 // usbPort.on('error', err => void console.error(err));
@@ -54,7 +107,7 @@ usbPort.on('end', () => void console.log('-----'));
 const MIN = 0;
 const MAX = 255;
 
-function inRange(value) {
+function inRange(value?: string) {
   if (typeof value === 'undefined') {
     return MAX;
   }
@@ -83,7 +136,7 @@ const PAGE = `
 </ul>
 `;
 
-function sendLog(res, msg?: string) {
+function sendLog(res: express.Response, msg?: string) {
   res.write(msg || '<p>-----</p>')
   res.write('<pre>')
   while (remoteLog.length) {
@@ -96,7 +149,7 @@ function sendLog(res, msg?: string) {
 app.get('/on', (req, res) => {
   sendLog(res);
   usbPort.write([LED, 1]);
-  serialReader.once('data', line => {
+  serialReader.once('data', (line: string) => {
     res.write(`<p>***${line}***<p>`);
     sendLog(res, `<h3>Led On</h3>`);
     res.end(PAGE);
@@ -106,7 +159,7 @@ app.get('/on', (req, res) => {
 app.get('/off', (req, res) => {
   sendLog(res);
   usbPort.write([LED, 0]);
-  serialReader.once('data', line => {
+  serialReader.once('data', (line: string) => {
     res.write(`<p>***${line}***<p>`);
     sendLog(res, `<h3>Led Off</h3>`);
     res.end(PAGE);
@@ -136,7 +189,7 @@ app.get('/backward/:speed?', (req, res) => {
 app.get('/stop', (req, res) => {
   sendLog(res);
   usbPort.write([STOP]);
-  serialReader.once('data', line => {
+  serialReader.once('data', (line: string) => {
     res.write(`<p>***${line}***<p>`);
     sendLog(res, `<h3>Stopping</h3>`);
     res.end(PAGE);

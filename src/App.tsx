@@ -11,7 +11,6 @@ const App: React.FC = () => {
   return (
     <SocketIOProvider>
       <div className="App">
-        <Logger />
         <CommandButton command={new Uint8Array([GO_FORWARD, 255])} >Full forward</CommandButton>
         <CommandButton command={new Uint8Array([GO_FORWARD, 127])} >Half forward</CommandButton>
         <CommandButton command={new Uint8Array([STOP])} >Stop</CommandButton>
@@ -28,6 +27,7 @@ const App: React.FC = () => {
         <CommandButton command={new Uint8Array([LED, 0])} >Led Off</CommandButton>
         <hr />
         <CommandButton command={new Uint8Array([BEEP])}>Beep</CommandButton>
+        <Logger />
       </div>
     </SocketIOProvider>
   );

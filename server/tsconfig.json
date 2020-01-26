@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "moduleResolution": "node"
+  },
+  "include": [
+    "../globals.d.ts",
+    "./*.ts"
+  ],
+}
