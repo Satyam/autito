@@ -9,8 +9,9 @@ const CommandButton: React.FC<{ command: ArrayBuffer }> = ({ command, children }
     if (socket) {
       console.log('emitting', command);
       // 'binary' is not included in the type definition so it is flagged as error, which is not.
-      // @ts-ignore
-      socket.binary(true).compress(false).emit('command', command);
+      // @ ts-ignore
+      // socket.binary(true).compress(false).emit('command', command);
+      socket.command(command)
     }
   }, [socket, command]);
 
