@@ -3,6 +3,8 @@
 
 #define WAIT 100
 
+#define MAX_BYTE 255
+
 // Joystick
 #define JOY_SWITCH 2
 #define JOY_X A0
@@ -16,7 +18,7 @@
 
 // Servo
 #define SERVO 9
-#define MAX_SERVO 180
+#define MAX_SERVO 90
 
 Servo servo;
 
@@ -51,10 +53,11 @@ int centerY;
 int lastX;
 int lastY;
 
+int readJoystick(int pin, int center) {
+  return (analogRead(pin) >> 1) - center;
+}
 
 void setMotor(int speed)  {
-  int s = min(abs(speed), MAX_SPEED);
-
   if (speed < 0) {
     digitalWrite(DIRA, HIGH);
     digitalWrite(DIRB, LOW);
@@ -63,7 +66,12 @@ void setMotor(int speed)  {
     digitalWrite(DIRA, LOW);
     digitalWrite(DIRB, HIGH);
   }
-  analogWrite(ENABLE, s);
+  analogWrite(ENABLE, abs(speed));
+}
+
+void setTurn(int turn) {
+  // Scale range of -255 to 255 into 0 to 180 for servo
+  servo.write(long(turn) * MAX_SERVO / MAX_BYTE + MAX_SERVO);
 }
 
 // Play tune
@@ -97,13 +105,14 @@ void setup() {
   pinMode(DIRB, OUTPUT);
 
   // Read the values for the joystick at idle (center) position
-  centerX = analogRead(JOY_X);
-  centerY = analogRead(JOY_Y);
+  // Values scaled from 0 to 1025 into 0 to 512 so they will
+  centerX = readJoystick(JOY_X, 0);
+  centerY = readJoystick(JOY_Y, 0);
 
 
   // Servo
   servo.attach(SERVO);
-  servo.write(MAX_SERVO / 2);
+  setTurn(0);
 
   // Built in LED
   pinMode(LED_BUILTIN, OUTPUT);
@@ -120,53 +129,66 @@ void loop() {
     Serial.print('>');
     Serial.print(char(remoteCommand));
     switch (remoteCommand) {
+
       case GO_FORWARD:
         firstByte = (byte)Serial.read();
         setMotor(firstByte);
+
         Serial.print('s');
         Serial.println(firstByte);
         break;
+
       case GO_BACK:
         firstByte = (byte)Serial.read();
         setMotor(-firstByte);
+
         Serial.print('s');
         Serial.println(-firstByte);
         break;
+
       case STOP:
         setMotor(0);
+
         Serial.print('s');
         Serial.println(0);
         break;
+
       case TURN_LEFT:
         firstByte = (byte)Serial.read();
-        servo.write((255 - long(firstByte)) * MAX_SERVO / 512 );
+        setTurn(-firstByte);
 
         Serial.print('t');
         Serial.println(-firstByte);
         break;
+
       case TURN_RIGHT:
         firstByte = (byte)Serial.read();
-        servo.write((long(firstByte) + 255) * MAX_SERVO / 512);
+        setTurn(firstByte);
 
         Serial.print('t');
         Serial.println(firstByte);
         break;
+
       case GO_STRAIGHT:
-        servo.write(90);
+        setTurn(0);
 
         Serial.print('t');
         Serial.println(0);
         break;
+
       case BEEP:
         if (playing == QUIET) {
           playing = START_PLAYING;
+
           Serial.print('!');
           Serial.println(true);
         }
         break;
+
       case LED:
         firstByte = (byte)Serial.read();
         digitalWrite(LED_BUILTIN, firstByte ? HIGH : LOW );
+
         Serial.print('#');
         Serial.println(firstByte);
         break;
@@ -175,14 +197,15 @@ void loop() {
         break;
     }
   }
-  int x = analogRead(JOY_X);
-  int y = analogRead(JOY_Y);
+
+  int y = readJoystick(JOY_Y, centerY);
 
   // Check for significant movement on Y axis
-  if (abs(y - lastY) > 2) {
+  if (y != lastY) {
     lastY = y;
 
-    long s = - long(y - centerY) * MAX_SPEED / centerY;
+    // The minus sigh reflects the orientation of the joystick.
+    int s = - min(y, MAX_BYTE);
     setMotor(s);
 
     Serial.print('s');
@@ -191,26 +214,31 @@ void loop() {
     Serial.println(s);
   }
 
+  int x = readJoystick(JOY_X, centerX);
   // Check for significant movement on X axis
-  if (abs(x - lastX) > 2) {
+  if (x != lastX) {
     lastX = x;
 
-    long a = long(x) * MAX_SERVO / centerX / 2;
-    servo.write(a);
+    int a = min(x, MAX_BYTE);
+
+    setTurn(a);
+
     Serial.print('t');
-    Serial.print(a - 90);
+    Serial.print(a);
     Serial.print('x');
-    Serial.println(a - 90);
+    Serial.println(a);
   }
 
   // Check on tune playing
   switch (playing) {
-    case START_PLAYING:
-      playing = PLAYING;
-      note = 0;
-      timeForNextNote = millis() + GAP;
+
+  case START_PLAYING:
+    playing = PLAYING;
+    note = 0;
+    timeForNextNote = millis() + GAP;
       tone(BUZZER, melody[note], DURATION);
       break;
+
     case PLAYING:
       if (millis() > timeForNextNote) {
         note++;
