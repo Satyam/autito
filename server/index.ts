@@ -45,13 +45,12 @@ io.on('connection', socket => {
   console.log('a user connected');
   socket.emit('reply', msg);
 
-  socket.on('command', command => {
+  socket.on('command', (command, ack) => {
     console.log('command', command)
     usbPort.write(command);
-    // serialReader.once('data', (line: string) => {
-    //   console.log('reply', line);
-    //   socket.emit('reply', line);
-    // });
+    serialReader.once('data', (line: string) => {
+      if (ack) ack(line);
+    });
   })
 });
 
@@ -98,6 +97,7 @@ const decode: (line: string) => statusMsg = line => {
 
 const serialReader = usbPort.pipe(new Readline({ delimiter: '\r\n' }));
 serialReader.on('data', (line: string) => {
+  if (remoteLog.length > 20) remoteLog.shift();
   remoteLog.push(line);
   io.emit('reply', decode(line));
 });

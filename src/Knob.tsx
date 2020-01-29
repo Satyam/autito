@@ -16,7 +16,6 @@ const Knob: React.FC<{
   height = 400,
 }) => {
     const {
-      lastCommand,
       speed,
       turn,
       x,
@@ -26,6 +25,7 @@ const Knob: React.FC<{
     const socket = useSocketIO();
 
     const [isDragging, setDragging] = useState<boolean>(false);
+    const [isTransmitting, setTransmitting] = useState<boolean>(false);
     const [initial, setInitial] = useState<[number, number]>([0, 0]);
     const [lastX, setLastX] = useState<number>(0);
     const [lastY, setLastY] = useState<number>(0);
@@ -34,28 +34,32 @@ const Knob: React.FC<{
       setInitial([ev.clientX, ev.clientY]);
       setDragging(true);
     }
+
     const mouseMoveHandler = (ev: React.MouseEvent<SVGSVGElement>) => {
-      if (isDragging) {
+      if (socket && isDragging && !isTransmitting) {
         const x = Math.round((ev.clientX - initial[0]) / width * 512);
         const y = Math.round((ev.clientY - initial[1]) / height * 512);
-        if (socket) {
-          if (y !== lastY) {
-            setLastY(y);
-            if (y) {
-              socket.command([
-                y < 0 ? GO_FORWARD : GO_BACK,
-                Math.abs(y),
-              ]);
-            } else socket.command([STOP]);
-          }
-          if (x !== lastX) {
-            setLastX(x);
-            if (x) {
-              socket.command([x > 0 ? TURN_RIGHT : TURN_LEFT, Math.abs(x)]);
-
-            } else socket.command([GO_STRAIGHT])
-          }
+        const cmd = [];
+        if (y !== lastY) {
+          setLastY(y);
+          if (y) {
+            cmd.push(y < 0 ? GO_FORWARD : GO_BACK, Math.abs(y))
+          } else cmd.push(STOP);
         }
+        if (x !== lastX) {
+          setLastX(x);
+          if (x) {
+            cmd.push(x > 0 ? TURN_RIGHT : TURN_LEFT, Math.abs(x));
+
+          } else cmd.push(GO_STRAIGHT)
+        }
+        if (cmd.length) {
+          setTransmitting(true);
+          socket.command(cmd, (reply) => {
+            setTransmitting(false);
+            console.log('reply', reply)
+          })
+        };
         console.log(x, y);
       }
     }
@@ -63,7 +67,8 @@ const Knob: React.FC<{
       setDragging(false);
       setLastX(0);
       setLastY(0);
-      if (socket) {
+      if (socket && speed && turn) {
+        setTransmitting(false)
         socket.command([STOP, GO_STRAIGHT]);
       }
     }
@@ -80,7 +85,6 @@ const Knob: React.FC<{
       >
         <rect className="frame" x="-300" y="-300" rx="10" ry="10" />
         <circle cx={x} cy={-y} r="20" fill="grey" onMouseDown={mouseDownHandler} />
-        {lastCommand === ' ' && (<circle cx={x} cy={-y} r="12" fill="green" />)}
         <Arrow dir={DIRS.UP} value={-speed} />
         <Arrow dir={DIRS.LEFT} value={turn} />
         <Arrow dir={DIRS.DOWN} value={-speed} />
