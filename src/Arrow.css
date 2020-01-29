@@ -1,0 +1,8 @@
+.Arrow path {
+  stroke:black;
+  fill: none;
+}
+
+.Arrow rect {
+  fill: green;
+}

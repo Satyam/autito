@@ -1,4 +1,6 @@
 import React from 'react';
+
+import './Arrow.css';
 export enum DIRS {
   UP,
   RIGHT,
@@ -47,7 +49,7 @@ const Arrow: React.FC<{
         break;
     }
     return (
-      <g transform={`rotate(${a},${cx},${cy})`}>
+      <g className="Arrow" transform={`rotate(${a},${cx},${cy})`}>
         <path
           d={`
             M ${cx - width / 2} ${cy + gap}
@@ -58,11 +60,9 @@ const Arrow: React.FC<{
             L ${cx - arrowWidth / 2} ${cy + gap + length}
             h ${(arrowWidth - width) / 2}
             Z`}
-          stroke="black"
-          fill="none"
-        />
-        {v && (<rect x={cx - width / 2} y={cy + gap} width={width} height={v * length / 255} fill="green" />)}
 
+        />
+        {v && (<rect x={cx - width / 2} y={cy + gap} width={width} height={v * length / 255} />)}
       </g>
     )
   }

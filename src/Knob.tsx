@@ -6,6 +6,8 @@ import Arrow, { DIRS } from './Arrow';
 
 import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT } from './constants';
 
+import "./Knob.css";
+
 const Knob: React.FC<{
   width?: number,
   height?: number
@@ -74,8 +76,9 @@ const Knob: React.FC<{
         onMouseMove={mouseMoveHandler}
         onMouseUp={mouseUpHandler}
         onMouseLeave={mouseUpHandler}
-        style={{ cursor: isDragging ? 'crosshair' : 'default' }}
+        className={`Knob ${isDragging ? 'dragging' : ''}`}
       >
+        <rect className="frame" x="-300" y="-300" rx="10" ry="10" />
         <circle cx={x} cy={-y} r="20" fill="grey" onMouseDown={mouseDownHandler} />
         {lastCommand === ' ' && (<circle cx={x} cy={-y} r="12" fill="green" />)}
         <Arrow dir={DIRS.UP} value={-speed} />

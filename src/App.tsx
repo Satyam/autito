@@ -6,6 +6,7 @@ import './App.css';
 
 import Knob from './Knob';
 import Led from './Led';
+import Horn from './Horn';
 
 import CommandButton from './CommandButton';
 
@@ -32,8 +33,10 @@ const App: React.FC = () => {
           <CommandButton command={[LED, 0]} >Led Off</CommandButton>
           <hr />
           <CommandButton command={[BEEP]}>Beep</CommandButton>
+          <hr />
           <Knob />
           <Led />
+          <Horn />
         </div>
       </MessageProvider>
     </SocketIOProvider>

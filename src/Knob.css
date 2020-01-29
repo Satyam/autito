@@ -1,0 +1,11 @@
+.Knob .frame {
+  stroke:grey; 
+  stroke-width:2;
+  fill:silver;
+  width: 100%;
+  height: 100%;
+}
+
+.Knob.dragging {
+  cursor: crosshair;
+}

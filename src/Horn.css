@@ -1,0 +1,32 @@
+.Horn {
+  stroke-width: 5px;
+  fill: none;
+}
+
+.Horn .frame {
+  stroke:grey;
+  stroke-width:2px;
+  fill:silver;
+  width: 100%;
+  height: 100%;
+}
+
+.Horn .beeping {
+  stroke: black;
+}
+
+.Horn .silent {
+  stroke: grey;
+}
+
+.Horn .beeping circle {
+  fill: black;
+}
+
+.Horn .beeping .wave {
+  stroke: black;
+}
+
+.Horn .silent .wave {
+  stroke: transparent;
+}
