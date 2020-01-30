@@ -1,7 +1,11 @@
+#include <Bounce2.h>
+
 #include <Servo.h>
 #include <pitches.h>
 
-#define WAIT 100
+#define DEBOUNCE_INTERVAL 25
+
+#define WAIT 10
 
 #define MAX_BYTE 255
 
@@ -21,6 +25,7 @@
 #define MAX_SERVO 90
 
 Servo servo;
+Bounce joyButton = Bounce();
 
 // Music:
 #define BUZZER 8
@@ -83,21 +88,14 @@ int note = 0;
 int playing = QUIET;
 unsigned long timeForNextNote;
 
-// ISR for switch: plays tune
-void handleSwitch() {
-  if (playing == QUIET) {
-    playing = START_PLAYING;
-    Serial.println("!1");
-  }
-}
-
 
 void setup() {
   Serial.begin(9600);
 
   // Joystick
-  pinMode(JOY_SWITCH, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(JOY_SWITCH), handleSwitch, LOW);
+
+  joyButton.attach(JOY_SWITCH, INPUT_PULLUP);
+  joyButton.interval(DEBOUNCE_INTERVAL);
 
   // DC Motor
   pinMode(ENABLE, OUTPUT);
@@ -198,6 +196,14 @@ void loop() {
     }
   }
 
+  joyButton.update();
+  if ( joyButton.fell() ) {
+    if (playing == QUIET) {
+      playing = START_PLAYING;
+      Serial.println("!1");
+    }
+  }
+
   int y = readJoystick(JOY_Y, centerY);
 
   // Check for significant movement on Y axis
@@ -232,10 +238,10 @@ void loop() {
   // Check on tune playing
   switch (playing) {
 
-  case START_PLAYING:
-    playing = PLAYING;
-    note = 0;
-    timeForNextNote = millis() + GAP;
+    case START_PLAYING:
+      playing = PLAYING;
+      note = 0;
+      timeForNextNote = millis() + GAP;
       tone(BUZZER, melody[note], DURATION);
       break;
 
