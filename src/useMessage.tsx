@@ -9,6 +9,7 @@ const initialMessage: statusMsg = {
   beep: false,
   x: 0,
   y: 0,
+  current: 0,
 }
 export const MessageContext = createContext<statusMsg>(initialMessage);
 

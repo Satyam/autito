@@ -18,6 +18,7 @@
 #define ENABLE 5
 #define DIRA 3
 #define DIRB 4
+#define CURRENT_SENSOR A2
 #define MAX_SPEED 255
 
 // Servo
@@ -116,12 +117,40 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.println("s0t0!0#0");
+
 }
 
 byte remoteCommand = 0;
 byte firstByte = 0;
 
+long idleCurrent = 0;
+
+long sum = 0;
+int cnt = 0;
+
 void loop() {
+
+  if (cnt < 1000) {
+    sum += analogRead(CURRENT_SENSOR);
+    cnt++;
+  } else {
+    if (idleCurrent) {
+      if (Serial.availableForWrite() > 6) {
+        Serial.print('&');
+        Serial.print(idleCurrent);
+        Serial.print('c');
+        Serial.println(sum - idleCurrent);
+      }
+    } else {
+      idleCurrent = sum;
+    }
+    cnt = 0;
+    sum = 0;
+  }
+
+
+
+
   if (Serial.available()) {
     remoteCommand = (byte)Serial.read();
     Serial.print('>');
@@ -196,45 +225,46 @@ void loop() {
     }
   }
 
-  joyButton.update();
-  if ( joyButton.fell() ) {
-    if (playing == QUIET) {
-      playing = START_PLAYING;
-      Serial.println("!1");
+  if (cnt % 20 == 0) {
+    joyButton.update();
+    if ( joyButton.fell() ) {
+      if (playing == QUIET) {
+        playing = START_PLAYING;
+        Serial.println("!1");
+      }
+    }
+
+    int y = readJoystick(JOY_Y, centerY);
+
+    // Check for significant movement on Y axis
+    if (y != lastY) {
+      lastY = y;
+
+      // The minus sigh reflects the orientation of the joystick.
+      int s = - min(y, MAX_BYTE);
+      setMotor(s);
+
+      Serial.print('s');
+      Serial.print(s);
+      Serial.print('y');
+      Serial.println(s);
+    }
+
+    int x = readJoystick(JOY_X, centerX);
+    // Check for significant movement on X axis
+    if (x != lastX) {
+      lastX = x;
+
+      int a = min(x, MAX_BYTE);
+
+      setTurn(a);
+
+      Serial.print('t');
+      Serial.print(a);
+      Serial.print('x');
+      Serial.println(a);
     }
   }
-
-  int y = readJoystick(JOY_Y, centerY);
-
-  // Check for significant movement on Y axis
-  if (y != lastY) {
-    lastY = y;
-
-    // The minus sigh reflects the orientation of the joystick.
-    int s = - min(y, MAX_BYTE);
-    setMotor(s);
-
-    Serial.print('s');
-    Serial.print(s);
-    Serial.print('y');
-    Serial.println(s);
-  }
-
-  int x = readJoystick(JOY_X, centerX);
-  // Check for significant movement on X axis
-  if (x != lastX) {
-    lastX = x;
-
-    int a = min(x, MAX_BYTE);
-
-    setTurn(a);
-
-    Serial.print('t');
-    Serial.print(a);
-    Serial.print('x');
-    Serial.println(a);
-  }
-
   // Check on tune playing
   switch (playing) {
 
@@ -263,5 +293,5 @@ void loop() {
   }
 
   // wait for a while
-  delay(WAIT);
+  // delay(WAIT);
 }

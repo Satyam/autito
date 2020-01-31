@@ -7,6 +7,7 @@ import './App.css';
 import Knob from './Knob';
 import Led from './Led';
 import Horn from './Horn';
+import Current from './Current';
 
 import CommandButton from './CommandButton';
 
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           <Knob />
           <Led />
           <Horn />
+          <Current size={400} />
         </div>
       </MessageProvider>
     </SocketIOProvider>

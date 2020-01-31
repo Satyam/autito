@@ -6,6 +6,7 @@ type statusMsg = {
   led: boolean;
   x: number;
   y: number;
+  current: number;
 }
 
 declare module '@serialport/parser-readline';
