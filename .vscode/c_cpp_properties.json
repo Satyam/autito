@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/satyam/.arduino15/packages/arduino/tools/**",
+                "/home/satyam/.arduino15/packages/arduino/hardware/avr/1.8.2/**",
+                "/home/satyam/arduino-1.8.10/libraries/**",
+                "/home/satyam/Arduino/libraries/**"
+            ],
+            "forcedInclude": [
+                "/home/satyam/.arduino15/packages/arduino/hardware/avr/1.8.2/cores/arduino/Arduino.h"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

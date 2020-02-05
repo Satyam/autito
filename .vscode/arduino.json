@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "/dev/ttyACM0",
+    "programmer": "AVRISP mkII",
+    "defaultBaudRate": 9600,
+    "sketch": "arduino/autito-remote.ino"
+}
