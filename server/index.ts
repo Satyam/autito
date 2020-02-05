@@ -41,6 +41,7 @@ const msg: statusMsg = {
   x: 0,
   y: 0,
   current: 0,
+  remote: false,
 }
 io.on('connection', socket => {
   console.log('a user connected');
@@ -87,7 +88,10 @@ const decode: (line: string) => statusMsg = line => {
         msg.y = n(i);
         break;
       case 'c':
-        msg.current = n(i) / 1000;
+        msg.current = n(i);
+        break;
+      case 'R':
+        msg.remote = line[i] !== '0';
         break;
       default:
         while (isNumber.test(line[i])) i += 1;

@@ -1,0 +1,6 @@
+.Remote .on {
+  background-color: green;
+}
+.Remote .off {
+  background-color: inherit;
+}

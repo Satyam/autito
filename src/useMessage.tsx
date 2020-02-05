@@ -10,6 +10,7 @@ const initialMessage: statusMsg = {
   x: 0,
   y: 0,
   current: 0,
+  remote: false,
 }
 export const MessageContext = createContext<statusMsg>(initialMessage);
 

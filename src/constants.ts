@@ -10,3 +10,7 @@ export const GO_STRAIGHT!: number = '|'.codePointAt(0);
 export const BEEP!: number = '!'.codePointAt(0);
 
 export const LED!: number = '#'.codePointAt(0);
+
+export const FULL_FORWARD!: number = 'F'.codePointAt(0);
+export const FULL_BACK!: number = 'B'.codePointAt(0);
+export const REMOTE!: number = 'R'.codePointAt(0);

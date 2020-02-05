@@ -8,10 +8,11 @@ import Knob from './Knob';
 import Led from './Led';
 import Horn from './Horn';
 import Current from './Current';
+import Remote from './Remote';
 
 import CommandButton from './CommandButton';
 
-import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, LED, BEEP } from './constants';
+import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, LED, BEEP, FULL_FORWARD, FULL_BACK } from './constants';
 
 const App: React.FC = () => {
   return (
@@ -35,10 +36,18 @@ const App: React.FC = () => {
           <hr />
           <CommandButton command={[BEEP]}>Beep</CommandButton>
           <hr />
+          <Remote>Remote</Remote>
+          <hr />
+
           <Knob />
           <Led />
           <Horn />
-          <Current size={400} />
+          <hr />
+          <Current />
+          <hr />
+          <CommandButton command={[FULL_FORWARD]}>Full Forward</CommandButton>
+          <CommandButton command={[STOP]} >Stop</CommandButton>
+          <CommandButton command={[FULL_BACK]}>Full Back</CommandButton>
         </div>
       </MessageProvider>
     </SocketIOProvider>
