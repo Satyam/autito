@@ -28,10 +28,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && tsc -p server",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "tsc -p server &&  node server/index.js"
+    "server": "node server/index.js"
   },
   "eslintConfig": {
     "extends": "react-app"
