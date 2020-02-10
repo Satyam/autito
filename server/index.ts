@@ -9,12 +9,25 @@ import { config as envRead } from 'dotenv';
 
 import { setTimeout } from 'timers';
 
-import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, BEEP, LED } from '../src/constants';
+// @ts-n ocheck
+const GO_FORWARD = 'f'.codePointAt(0);
+const GO_BACK = 'b'.codePointAt(0);
+const STOP = 'S'.codePointAt(0);
+
+const TURN_LEFT = 'l'.codePointAt(0);
+const TURN_RIGHT = 'r'.codePointAt(0);
+const GO_STRAIGHT = '|'.codePointAt(0);
+
+const BEEP = '!'.codePointAt(0);
+
+const LED = '#'.codePointAt(0);
+
+const REMOTE = 'R'.codePointAt(0);
+
+const CURRENT = 'c'.codePointAt(0);
 
 
 envRead();
-
-// const wss = new WSServer({ port: process.env.REACT_APP_WS_PORT });
 
 const app = express();
 const http = createServer(app);
@@ -48,8 +61,39 @@ io.on('connection', socket => {
   socket.emit('reply', msg);
 
   socket.on('command', (command, ack) => {
-    console.log('command', command)
-    usbPort.write(command);
+    console.log('command', command);
+    const {
+      speed,
+      turn,
+      beep,
+      led,
+      current,
+      remote,
+    }: cmdMsg = JSON.parse(command);
+    const cmdArray: number[] = [];
+    if (typeof speed !== 'undefined') {
+      if (speed) {
+        cmdArray.push(speed > 0 ? GO_FORWARD : GO_BACK, Math.abs(speed));
+      } else cmdArray.push(STOP);
+    }
+    if (typeof turn !== 'undefined') {
+      if (turn) {
+        cmdArray.push(turn > 0 ? TURN_RIGHT : TURN_LEFT, Math.abs(turn));
+      } else cmdArray.push(GO_STRAIGHT);
+    }
+    if (typeof beep !== 'undefined') {
+      cmdArray.push(BEEP);
+    }
+    if (typeof led !== 'undefined') {
+      cmdArray.push(LED, led ? 1 : 0);
+    }
+    if (typeof current !== 'undefined') {
+      cmdArray.push(CURRENT, current ? 1 : 0);
+    }
+    if (typeof remote !== 'undefined') {
+      cmdArray.push(REMOTE, remote ? 1 : 0);
+    }
+    usbPort.write(cmdArray);
     serialReader.once('data', (line: string) => {
       if (ack) ack(line);
     });
@@ -68,6 +112,9 @@ const decode: (line: string) => statusMsg = line => {
     switch (line[i++]) {
       case '>':
         msg.lastCommand = line[i];
+        break;
+      case '=':
+        // argument to command
         break;
       case 's':
         msg.speed = n(i);

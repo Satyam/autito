@@ -4,8 +4,6 @@ import { useSocketIO } from './useSocketIO'
 
 import Arrow, { DIRS } from './Arrow';
 
-import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT } from './constants';
-
 import "./Knob.css";
 
 const Knob: React.FC<{
@@ -39,21 +37,19 @@ const Knob: React.FC<{
       if (socket && isDragging && !isTransmitting) {
         const x = Math.round((ev.clientX - initial[0]) / width * 512);
         const y = Math.round((ev.clientY - initial[1]) / height * 512);
-        const cmd = [];
+        const cmd: cmdMsg = {};
+        let changed = false;
         if (y !== lastY) {
           setLastY(y);
-          if (y) {
-            cmd.push(y < 0 ? GO_FORWARD : GO_BACK, Math.abs(y))
-          } else cmd.push(STOP);
+          cmd.speed = y;
+          changed = true;
         }
         if (x !== lastX) {
           setLastX(x);
-          if (x) {
-            cmd.push(x > 0 ? TURN_RIGHT : TURN_LEFT, Math.abs(x));
-
-          } else cmd.push(GO_STRAIGHT)
+          cmd.turn = x;
+          changed = true;
         }
-        if (cmd.length) {
+        if (changed) {
           setTransmitting(true);
           socket.command(cmd, (reply) => {
             setTransmitting(false);
@@ -69,7 +65,7 @@ const Knob: React.FC<{
       setLastY(0);
       if (socket && speed && turn) {
         setTransmitting(false)
-        socket.command([STOP, GO_STRAIGHT]);
+        socket.command({ speed: 0, turn: 0 });
       }
     }
     return (

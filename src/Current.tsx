@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useMessage } from './useMessage';
+import { useSocketIO } from './useSocketIO'
 
 const MAX_X = 200;
 const MAX_Y = 120;
 
 const Current: React.FC<{ width?: number, height?: number }> = ({ width = 400, height = 80 }) => {
   const [values, setValues] = useState<number[]>([]);
-
+  const [active, setActive] = useState<boolean>(true);
   const { current } = useMessage();
+  const socket = useSocketIO();
 
   useEffect(() => {
     setValues(v => {
+      setActive(true);
       if (v.length > MAX_X) v.shift();
       return v.concat(-current);
     })
   }, [current])
+
+  const clickHandler = useCallback<React.MouseEventHandler<HTMLButtonElement>>(() => {
+    if (socket) {
+      socket.command({ current: !active })
+      setActive(!active);
+    }
+  }, [active, socket]);
+
 
   return (<>
     <svg
@@ -33,6 +44,7 @@ const Current: React.FC<{ width?: number, height?: number }> = ({ width = 400, h
       <polyline points={values.map((y, x) => `${x},${y}`).join(' ')} stroke="black" fill="none" stroke-width={1} />
     </svg>
     <p>Last value: {current}</p><p>Average past 20 values: {values.slice(- 20).reduce((acc, v) => acc + v, 0) / 20}</p>
+    <button onClick={clickHandler}>{active ? 'Pause' : 'Resume'}</button>
   </>);
 }
 

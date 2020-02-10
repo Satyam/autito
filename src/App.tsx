@@ -12,29 +12,28 @@ import Remote from './Remote';
 
 import CommandButton from './CommandButton';
 
-import { GO_FORWARD, GO_BACK, STOP, TURN_LEFT, TURN_RIGHT, GO_STRAIGHT, LED, BEEP, FULL_FORWARD, FULL_BACK } from './constants';
 
 const App: React.FC = () => {
   return (
     <SocketIOProvider>
       <MessageProvider>
         <div className="App">
-          <CommandButton command={[GO_FORWARD, 255]} >Full forward</CommandButton>
-          <CommandButton command={[GO_FORWARD, 127]} >Half forward</CommandButton>
-          <CommandButton command={[STOP]} >Stop</CommandButton>
-          <CommandButton command={[GO_BACK, 127]} >Half back</CommandButton>
-          <CommandButton command={[GO_BACK, 255]} >Full back</CommandButton>
+          <CommandButton command={{ speed: 255 }} >Full forward</CommandButton>
+          <CommandButton command={{ speed: 127 }} >Half forward</CommandButton>
+          <CommandButton command={{ speed: 0 }} >Stop</CommandButton>
+          <CommandButton command={{ speed: -127 }} >Half back</CommandButton>
+          <CommandButton command={{ speed: -255 }} >Full back</CommandButton>
           <hr />
-          <CommandButton command={[TURN_LEFT, 255]} >Full left</CommandButton>
-          <CommandButton command={[TURN_LEFT, 127]} >Half left</CommandButton>
-          <CommandButton command={[GO_STRAIGHT]} >Straight</CommandButton>
-          <CommandButton command={[TURN_RIGHT, 127]} >Half right</CommandButton>
-          <CommandButton command={[TURN_RIGHT, 255]} >Full right</CommandButton>
+          <CommandButton command={{ turn: 255 }} >Full left</CommandButton>
+          <CommandButton command={{ turn: 127 }} >Half left</CommandButton>
+          <CommandButton command={{ turn: 0 }} >Straight</CommandButton>
+          <CommandButton command={{ turn: -127 }} >Half right</CommandButton>
+          <CommandButton command={{ turn: -255 }} >Full right</CommandButton>
           <hr />
-          <CommandButton command={[LED, 1]} >Led On</CommandButton>
-          <CommandButton command={[LED, 0]} >Led Off</CommandButton>
+          <CommandButton command={{ led: true }} >Led On</CommandButton>
+          <CommandButton command={{ led: false }} >Led Off</CommandButton>
           <hr />
-          <CommandButton command={[BEEP]}>Beep</CommandButton>
+          <CommandButton command={{ beep: true }}>Beep</CommandButton>
           <hr />
           <Remote>Remote</Remote>
           <hr />
@@ -44,10 +43,6 @@ const App: React.FC = () => {
           <Horn />
           <hr />
           <Current />
-          <hr />
-          <CommandButton command={[FULL_FORWARD]}>Full Forward</CommandButton>
-          <CommandButton command={[STOP]} >Stop</CommandButton>
-          <CommandButton command={[FULL_BACK]}>Full Back</CommandButton>
         </div>
       </MessageProvider>
     </SocketIOProvider>

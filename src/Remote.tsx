@@ -2,8 +2,6 @@ import React, { useCallback } from 'react';
 import { useMessage } from './useMessage';
 import { useSocketIO } from './useSocketIO'
 
-import { REMOTE } from './constants';
-
 import './Remote.css';
 
 const Remote: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>> = ({ children }) => {
@@ -13,7 +11,7 @@ const Remote: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLBu
 
   const clickHandler = useCallback<React.MouseEventHandler<HTMLButtonElement>>(() => {
     if (socket) {
-      socket.command([REMOTE, remote ? 0 : 1])
+      socket.command({ remote: !remote });
     }
   }, [remote, socket]);
 

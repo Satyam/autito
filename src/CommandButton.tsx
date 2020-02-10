@@ -2,7 +2,7 @@ import React, { useCallback, } from 'react';
 import { useSocketIO } from './useSocketIO';
 
 
-const CommandButton: React.FC<{ command: number[] }> = ({ command, children }) => {
+const CommandButton: React.FC<{ command: cmdMsg }> = ({ command, children }) => {
   const socket = useSocketIO();
 
   const handleClick = useCallback(() => {

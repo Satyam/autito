@@ -2,8 +2,6 @@ import React, { useCallback } from 'react';
 import { useMessage } from './useMessage';
 import { useSocketIO } from './useSocketIO'
 
-import { LED } from './constants';
-
 import './Led.css';
 
 const Led: React.FC<{ size?: number }> = ({ size = 50 }) => {
@@ -13,7 +11,7 @@ const Led: React.FC<{ size?: number }> = ({ size = 50 }) => {
 
   const clickHandler = useCallback<React.MouseEventHandler<SVGRectElement>>(() => {
     if (socket) {
-      socket.command([LED, led ? 0 : 1])
+      socket.command({ led: !led })
     }
   }, [led, socket]);
 

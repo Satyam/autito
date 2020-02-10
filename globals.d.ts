@@ -10,4 +10,14 @@ type statusMsg = {
   remote: boolean;
 }
 
+type cmdMsg = {
+  speed?: number;
+  turn?: number;
+  beep?: boolean;
+  led?: boolean;
+  current?: boolean;
+  remote?: boolean;
+}
+
+
 declare module '@serialport/parser-readline';

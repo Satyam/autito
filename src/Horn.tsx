@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { useMessage } from './useMessage';
 import { useSocketIO } from './useSocketIO'
 
-import { BEEP } from './constants';
 import './Horn.css'
 
 const Horn: React.FC<{ size?: number }> = ({ size = 50 }) => {
@@ -12,7 +11,7 @@ const Horn: React.FC<{ size?: number }> = ({ size = 50 }) => {
 
   const clickHandler = useCallback<React.MouseEventHandler<SVGRectElement>>(() => {
     if (socket && !beep) {
-      socket.command([BEEP])
+      socket.command({ beep: true })
     }
   }, [beep, socket]);
 

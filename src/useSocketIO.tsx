@@ -1,7 +1,7 @@
 import React, { createContext, useMemo, useContext } from 'react';
 import io from 'socket.io-client';
 
-type Command = (command: number[], ack?: (line: string) => void) => MySocket;
+type Command = (command: cmdMsg, ack?: (line: string) => void) => MySocket;
 
 export type MySocket = (SocketIOClient.Socket & {
   command: Command;
@@ -17,10 +17,8 @@ export const SocketIOProvider: React.FC<{ url?: string, options?: SocketIOClient
       // .command not part of SocketIOClient.Socket
       // @ts-ignore
       s.command = (command, ack) => {
-        console.log('emitting', String.fromCodePoint(command[0]), command[1]);
-        // 'binary' is not included in the type definition so it is flagged as error, which is not.
-        // @ts-ignore
-        return s.binary(true).compress(true).emit('command', new Uint8Array(command), ack);
+        console.log('emitting', command);
+        return s.compress(true).emit('command', JSON.stringify(command), ack);
       }
 
     }
