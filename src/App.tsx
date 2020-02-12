@@ -24,11 +24,11 @@ const App: React.FC = () => {
           <CommandButton command={{ speed: -127 }} >Half back</CommandButton>
           <CommandButton command={{ speed: -255 }} >Full back</CommandButton>
           <hr />
-          <CommandButton command={{ turn: 255 }} >Full left</CommandButton>
-          <CommandButton command={{ turn: 127 }} >Half left</CommandButton>
+          <CommandButton command={{ turn: -255 }} >Full left</CommandButton>
+          <CommandButton command={{ turn: -127 }} >Half left</CommandButton>
           <CommandButton command={{ turn: 0 }} >Straight</CommandButton>
-          <CommandButton command={{ turn: -127 }} >Half right</CommandButton>
-          <CommandButton command={{ turn: -255 }} >Full right</CommandButton>
+          <CommandButton command={{ turn: 127 }} >Half right</CommandButton>
+          <CommandButton command={{ turn: 255 }} >Full right</CommandButton>
           <hr />
           <CommandButton command={{ led: true }} >Led On</CommandButton>
           <CommandButton command={{ led: false }} >Led Off</CommandButton>
