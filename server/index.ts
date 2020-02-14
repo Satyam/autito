@@ -61,7 +61,7 @@ io.on('connection', socket => {
   socket.emit('reply', msg);
 
   socket.on('command', (command, ack) => {
-    console.log('command', command);
+    // console.log('command', command);
     const {
       speed,
       turn,
@@ -145,7 +145,7 @@ const decode: (line: string) => statusMsg = line => {
         break;
     }
   }
-  console.log(line, msg);
+  // console.log(line, msg);
 
   return msg;
 }
@@ -187,7 +187,7 @@ const PAGE = `
   <li><a href="/right/127">Turn right half way</a></li>
   <li><a href="/straight">Go Straight</a></li>
   <li><a href="/beep">beep</a></li>
-  <li><a href="/">Full stop, wheels straight</a></li>
+  <li><a href="/web">Full stop, wheels straight</a></li>
 </ul>
 `;
 
@@ -289,15 +289,15 @@ app.get('/beep', (req, res) => {
   }, 1000)
 });
 
-// app.get('/', (req, res) => {
-//   sendLog(res);
-//   usbPort.write([STOP]);
-//   usbPort.write([GO_STRAIGHT]);
-//   setTimeout(() => {
-//     sendLog(res, `<h3>Stopped, straight</h3>`);
-//     res.end(PAGE);
-//   }, 1000)
-// });
+app.get('/web', (req, res) => {
+  sendLog(res);
+  usbPort.write([STOP]);
+  usbPort.write([GO_STRAIGHT]);
+  setTimeout(() => {
+    sendLog(res, `<h3>Stopped, straight</h3>`);
+    res.end(PAGE);
+  }, 1000)
+});
 
 app.get('/', (req, res) => {
   res.sendFile('index.html', {

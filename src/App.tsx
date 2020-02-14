@@ -18,6 +18,7 @@ const App: React.FC = () => {
     <SocketIOProvider>
       <MessageProvider>
         <div className="App">
+          <a href="/web">Web Interface</a>
           <CommandButton command={{ speed: 255 }} >Full forward</CommandButton>
           <CommandButton command={{ speed: 127 }} >Half forward</CommandButton>
           <CommandButton command={{ speed: 0 }} >Stop</CommandButton>
